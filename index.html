@@ -717,9 +717,12 @@ function renderCalendar(gridId, labelId, yr, mo) {
   document.getElementById(labelId).textContent = MONTHS[mo]+' '+yr;
   const dayMap = {};
   S.trades.filter(t=>t.status==='closed').forEach(t=>{
-    const d = (t.closeTime||'').substring(0,10);
-    if(!d) return;
-    const [y,m,day] = d.split('-').map(Number);
+    const raw = (t.closeTime||'').substring(0,10);
+    if(!raw || raw.length < 10) return;
+    const parts = raw.split('-');
+    if(parts.length < 3) return;
+    const y = parseInt(parts[0]), m = parseInt(parts[1]), day = parseInt(parts[2]);
+    if(isNaN(y)||isNaN(m)||isNaN(day)) return;
     if(y===yr && m-1===mo){ if(!dayMap[day])dayMap[day]=0; dayMap[day]+=(parseFloat(t.profit)||0); }
   });
   const grid = document.getElementById(gridId);
